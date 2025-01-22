@@ -10,7 +10,7 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     previewArea.innerHTML = "";
     previewArea.style.display = "none";
     downloadLink.style.display = "none";
-
+    status.classList.remove("text-error", "text-green", "text-warning");
     // Kiểm tra API Key và file
     if (!apiKey) {
         alert('Vui lòng nhập Gemini API Key');
@@ -19,6 +19,7 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
 
     if (!fileInput.files.length) {
         status.textContent = "Vui lòng chọn file SRT.";
+        status.classList.add("text-error"); // Thêm lớp để đổi màu
         return;
     }
 
@@ -27,6 +28,7 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     // Kiểm tra định dạng file
     if (!file.name.endsWith('.srt')) {
         status.textContent = "File phải có định dạng .srt.";
+        status.classList.add("text-error"); // Thêm lớp để đổi màu
         return;
     }
 
@@ -35,6 +37,8 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     reader.onload = async function () {
         const srtContent = reader.result;
         status.textContent = "Đang xử lý file...";
+        status.classList.remove("text-error", "text-green", "text-warning");
+        status.classList.add("text-warning");
 
         try {
             const response = await fetch("/api/translate", {
@@ -73,8 +77,12 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
             downloadLink.style.display = "block";
 
             status.textContent = "Dịch thành công!";
+            status.classList.remove("text-error", "text-green", "text-warning");
+            status.classList.add("text-green"); // Thêm lớp để đổi màu
         } catch (error) {
             status.textContent = "Dịch thất bại. Vui lòng thử lại.";
+            status.classList.remove("text-error", "text-green", "text-warning");
+            status.classList.add("text-error"); // Thêm lớp để đổi màu
             console.error(error);
         }
     };

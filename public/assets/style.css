@@ -3,17 +3,17 @@ body {
     max-width: 600px;
     margin: 50px auto;
     text-align: center;
-  }
-  
-  h1 {
-    color: #333;
-  }
-  
-  input[type="file"] {
-    margin: 20px 0;
-  }
+}
 
-  .input-field {
+h1 {
+    color: #333;
+}
+
+input[type="file"] {
+    margin: 20px 0;
+}
+
+.input-field {
     width: 100%;
     padding: 10px;
     margin: 5px 0;
@@ -21,27 +21,37 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-  
-  button {
+
+button {
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 5px;
-  }
-  
-  button:disabled {
+}
+
+button:disabled {
     background-color: #aaa;
     cursor: not-allowed;
-  }
-  
-  #status {
+}
+
+#status {
     color: #555;
-  }
-  
-  a {
+}
+
+a {
     text-decoration: none;
     color: #007bff;
-  }
-  
+}
+
+.text-error {
+    color: red !important;
+}
+
+.text-green {
+    color: green !important;
+}
+.text-warning {
+    color: yellow !important;
+}
