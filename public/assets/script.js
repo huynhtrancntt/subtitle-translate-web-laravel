@@ -10,7 +10,8 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     previewArea.innerHTML = "";
     previewArea.style.display = "none";
     downloadLink.style.display = "none";
-    status.classList.remove("text-error", "text-green", "text-warning");
+    status.classList.remove("text-error", "text-green", "text-blue");
+
     // Kiểm tra API Key và file
     if (!apiKey) {
         alert('Vui lòng nhập Gemini API Key');
@@ -19,7 +20,7 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
 
     if (!fileInput.files.length) {
         status.textContent = "Vui lòng chọn file SRT.";
-        status.classList.add("text-error"); // Thêm lớp để đổi màu
+        status.classList.add("text-error");
         return;
     }
 
@@ -28,7 +29,7 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     // Kiểm tra định dạng file
     if (!file.name.endsWith('.srt')) {
         status.textContent = "File phải có định dạng .srt.";
-        status.classList.add("text-error"); // Thêm lớp để đổi màu
+        status.classList.add("text-error");
         return;
     }
 
@@ -37,60 +38,75 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     reader.onload = async function () {
         const srtContent = reader.result;
         status.textContent = "Đang xử lý file...";
-        status.classList.remove("text-error", "text-green", "text-warning");
-        status.classList.add("text-warning");
+        status.classList.add("text-blue");
 
-        try {
-            const response = await fetch("/api/translate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    inputContent: srtContent,
-                    apiKey: apiKey,
-                }),
-            });
+        // Tách nội dung file SRT thành các đoạn nhỏ
+        const CHARACTER_PER_BATCH = 1000; // Giới hạn ký tự mỗi đoạn
+        const parts = splitSRTContent(srtContent, CHARACTER_PER_BATCH);
 
-            if (!response.ok) {
-                throw new Error("Dịch thất bại.");
+        const translatedParts = [];
+        previewArea.innerHTML = ""; // Reset preview trước khi dịch
+
+        for (let i = 0; i < parts.length; i++) {
+            status.textContent = `Đang dịch đoạn ${i + 1}/${parts.length}...`;
+
+            try {
+                const response = await fetch("/api/translate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        inputContent: parts[i],
+                        apiKey: apiKey,
+                    }),
+                });
+
+                if (!response.ok) throw new Error(`Lỗi khi dịch đoạn ${i + 1}`);
+
+                const data = await response.json();
+                const translatedPart = data.translatedContent;
+
+                // Lưu đoạn dịch và hiển thị trong preview
+                translatedParts.push(translatedPart);
+                const previewElement = document.createElement("p");
+                previewElement.innerHTML = translatedPart.replace(/\n/g, "<br>");
+                previewArea.appendChild(previewElement);
+
+                // Cuộn tự động
+                previewArea.scrollTop = previewArea.scrollHeight;
+                previewArea.style.display = "block";
+            } catch (error) {
+                console.error(error);
+                translatedParts.push(`// Lỗi khi dịch đoạn ${i + 1}`);
+                const errorElement = document.createElement("p");
+                errorElement.textContent = `Lỗi khi dịch đoạn ${i + 1}`;
+                errorElement.style.color = "red";
+                previewArea.appendChild(errorElement);
             }
-
-            const data = await response.json();
-            const translatedContent = data.translatedContent;
-
-            // Hiển thị preview khi dịch thành công
-            previewArea.style.display = "block";
-            previewArea.textContent = translatedContent;
-
-            // Đổi tên file tải xuống
-            const originalFileName = file.name.replace('.srt', '');
-            const newFileName = `${originalFileName}.vn.srt`;
-
-            // Tạo file tải về
-            const blob = new Blob([translatedContent], { type: "text/plain" });
-            const url = URL.createObjectURL(blob);
-
-            downloadLink.href = url;
-            downloadLink.download = newFileName;
-            downloadLink.textContent = "Tải file đã dịch";
-            downloadLink.style.display = "block";
-
-            status.textContent = "Dịch thành công!";
-            status.classList.remove("text-error", "text-green", "text-warning");
-            status.classList.add("text-green"); // Thêm lớp để đổi màu
-        } catch (error) {
-            status.textContent = "Dịch thất bại. Vui lòng thử lại.";
-            status.classList.remove("text-error", "text-green", "text-warning");
-            status.classList.add("text-error"); // Thêm lớp để đổi màu
-            console.error(error);
         }
+
+        // Tạo file đã dịch sau khi hoàn thành
+        const translatedContent = translatedParts.join("\n");
+        const blob = new Blob([translatedContent], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        // Hiển thị link tải file
+        const newFileName = file.name.replace('.srt', '.vi.srt');
+        downloadLink.href = url;
+        downloadLink.download = newFileName;
+        downloadLink.textContent = "Tải file đã dịch";
+        downloadLink.style.display = "block";
+
+        status.textContent = "Dịch thành công!";
+        status.classList.remove("text-error", "text-blue");
+        status.classList.add("text-green");
     };
 
     reader.readAsText(file);
 });
 
-// Hàm tách nội dung SRT thành các đoạn nhỏ
+// Hàm tách nội dung SRT thành các phần nhỏ
 function splitSRTContent(srtContent, charLimit) {
     const lines = srtContent.split('\n');
     const parts = [];
