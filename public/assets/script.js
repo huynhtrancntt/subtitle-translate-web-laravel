@@ -4,12 +4,18 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     const status = document.getElementById("status");
     const downloadLink = document.getElementById("downloadLink");
     const previewArea = document.getElementById("previewArea");
+    const progressBar = document.getElementById("progressBar");
+    const progressContainer = document.getElementById("progressContainer");
 
     // Reset giao diện
     status.textContent = "";
     previewArea.innerHTML = "";
     previewArea.style.display = "none";
     downloadLink.style.display = "none";
+    progressBar.style.width = "0%";
+    progressBar.setAttribute("aria-valuenow", "0");
+    progressBar.textContent = "0%";
+    progressContainer.style.display = "none";
     status.classList.remove("text-error", "text-green", "text-blue");
 
     // Kiểm tra API Key và file
@@ -40,15 +46,21 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
         status.textContent = "Đang xử lý file...";
         status.classList.add("text-blue");
 
+        // Hiển thị thanh tiến trình
+        progressContainer.style.display = "block";
+
         // Tách nội dung file SRT thành các đoạn nhỏ
         const CHARACTER_PER_BATCH = 1000; // Giới hạn ký tự mỗi đoạn
         const parts = splitSRTContent(srtContent, CHARACTER_PER_BATCH);
+        const totalParts = parts.length;
 
         const translatedParts = [];
         previewArea.innerHTML = ""; // Reset preview trước khi dịch
 
-        for (let i = 0; i < parts.length; i++) {
-            status.textContent = `Đang dịch đoạn ${i + 1}/${parts.length}...`;
+        for (let i = 0; i < totalParts; i++) {
+            status.textContent = `Đang dịch đoạn ${i + 1}/${totalParts}...`;
+
+            const startTime = Date.now(); // Bắt đầu đo thời gian
 
             try {
                 const response = await fetch("/api/translate", {
@@ -62,6 +74,9 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
                     }),
                 });
 
+                const apiTime = Date.now() - startTime; // Đo thời gian gọi API
+                console.log(`Thời gian gọi API đoạn ${i + 1}: ${apiTime}ms`);
+
                 if (!response.ok) throw new Error(`Lỗi khi dịch đoạn ${i + 1}`);
 
                 const data = await response.json();
@@ -72,6 +87,12 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
                 const previewElement = document.createElement("p");
                 previewElement.innerHTML = translatedPart.replace(/\n/g, "<br>");
                 previewArea.appendChild(previewElement);
+
+                // Cập nhật thanh tiến trình
+                const progress = Math.round(((i + 1) / totalParts) * 100);
+                progressBar.style.width = `${progress}%`;
+                progressBar.setAttribute("aria-valuenow", progress);
+                progressBar.textContent = `${progress}%`;
 
                 // Cuộn tự động
                 previewArea.scrollTop = previewArea.scrollHeight;
@@ -97,6 +118,12 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
         downloadLink.download = newFileName;
         downloadLink.textContent = "Tải file đã dịch";
         downloadLink.style.display = "block";
+
+        // Cập nhật thanh tiến trình hoàn tất
+        progressBar.style.width = "100%";
+        progressBar.setAttribute("aria-valuenow", "100");
+        progressBar.textContent = "Hoàn thành!";
+        progressContainer.style.display = "none";
 
         status.textContent = "Dịch thành công!";
         status.classList.remove("text-error", "text-blue");

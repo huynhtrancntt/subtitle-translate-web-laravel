@@ -32,6 +32,13 @@
                                 <button type="button" id="translateBtn" class="btn btn-primary">Dịch</button>
                             </div>
                         </form>
+                        <div class="progress mt-3" style="height: 20px; display: none;" id="progressContainer">
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                                role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
+                                aria-valuemax="100">
+                                0%
+                            </div>
+                        </div>
                         <p id="status" class="mt-3 text-center text-muted"></p>
                         <div id="previewArea" class="border rounded mt-3 p-3"
                             style="max-height: 300px; overflow-y: auto; display: none;">
@@ -45,6 +52,8 @@
                         </div> --}}
                     </div>
                 </div>
+
+
             </div>
         </div>
     </div>
