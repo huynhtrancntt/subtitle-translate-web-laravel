@@ -5,29 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SRT Translator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/style.css') }}">
 </head>
 
-<body>
-    <h1>SRT Translator</h1>
-    <p>Chọn file SRT và dịch sang tiếng Việt.</p>
-
-    <div>
-        <label for="apiKey">Nhập Gemini API Key:</label>
-        <input type="text" id="apiKey" class="input-field" placeholder="Gemini API Key" />
-        <br><br>
-        <input type="file" id="srtFile" accept=".srt" />
-        <button id="translateBtn">Dịch</button>
-        <p id="status"></p>
-        <div id="previewArea"
-            style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; max-height: 300px; overflow-y: auto;">
-            <!-- Nội dung preview sẽ hiển thị tại đây -->
+<body class="bg-light py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card shadow-md">
+                    <div class="card-body">
+                        <h1 class="text-center text-primary mb-4">SRT Translator</h1>
+                        <p class="text-center">Chọn file SRT và dịch sang tiếng Việt.</p>
+                        <form>
+                            <div class="mb-3">
+                                <label for="apiKey" class="form-label">Nhập Gemini API Key:</label>
+                                <input type="text" id="apiKey" class="form-control"
+                                    value="AIzaSyBw1UEyprOT0XHy4cT2KFFNguDgLuoN4fk" placeholder="Gemini API Key" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="srtFile" class="form-label">Chọn file SRT:</label>
+                                <input type="file" id="srtFile" class="form-control" accept=".srt" />
+                            </div>
+                            <div class="d-grid">
+                                <button type="button" id="translateBtn" class="btn btn-primary">Dịch</button>
+                            </div>
+                        </form>
+                        <p id="status" class="mt-3 text-center text-muted"></p>
+                        <div id="previewArea" class="border rounded mt-3 p-3"
+                            style="max-height: 300px; overflow-y: auto; display: none;">
+                            <!-- Nội dung preview sẽ hiển thị tại đây -->
+                        </div>
+                        <div class="mt-3 text-center">
+                            <a id="downloadLink" class="btn btn-success" style="display: none;">Tải file đã dịch</a>
+                        </div>
+                        {{-- <div class="mt-3 text-center">
+                            <a href="guide.html" class="text-secondary">Cách lấy Gemini API Key</a>
+                        </div> --}}
+                    </div>
+                </div>
+            </div>
         </div>
-        <a id="downloadLink" style="display: none;">Tải file đã dịch</a>
-        <br><br>
-        {{-- <a href="guide.html">Cách lấy Gemini API Key</a> --}}
     </div>
-
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/script.js') }}"></script>
 </body>
 

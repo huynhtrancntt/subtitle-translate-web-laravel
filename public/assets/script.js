@@ -8,6 +8,7 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     // Reset giao diện
     status.textContent = "";
     previewArea.innerHTML = "";
+    previewArea.style.display = "none";
     downloadLink.style.display = "none";
 
     // Kiểm tra API Key và file
@@ -22,6 +23,13 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     }
 
     const file = fileInput.files[0];
+
+    // Kiểm tra định dạng file
+    if (!file.name.endsWith('.srt')) {
+        status.textContent = "File phải có định dạng .srt.";
+        return;
+    }
+
     const reader = new FileReader();
 
     reader.onload = async function () {
@@ -47,15 +55,20 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
             const data = await response.json();
             const translatedContent = data.translatedContent;
 
-            // Hiển thị preview
+            // Hiển thị preview khi dịch thành công
+            previewArea.style.display = "block";
             previewArea.textContent = translatedContent;
+
+            // Đổi tên file tải xuống
+            const originalFileName = file.name.replace('.srt', '');
+            const newFileName = `${originalFileName}.vn.srt`;
 
             // Tạo file tải về
             const blob = new Blob([translatedContent], { type: "text/plain" });
             const url = URL.createObjectURL(blob);
 
             downloadLink.href = url;
-            downloadLink.download = "translated.srt";
+            downloadLink.download = newFileName;
             downloadLink.textContent = "Tải file đã dịch";
             downloadLink.style.display = "block";
 
