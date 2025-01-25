@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TranslationController;
+use App\Http\Controllers\TrafficViolationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,3 +19,9 @@ Route::get('/', function () {
 });
 Route::get('/translate', [TranslationController::class, 'showTranslatePage']);
 
+
+// Route::get('/tra-cuu', [TrafficViolationController::class, 'showCheckViolationPage']);
+// Route::post('/check-violation', [TrafficViolationController::class, 'checkViolation']);
+
+Route::get('/tra-cuu', [TrafficViolationController::class, 'showCheckViolationPage']);
+// Route::post('/check-violation', [TrafficViolationController::class, 'checkViolation'])->name('traffic-violation.check');

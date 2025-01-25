@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\TrafficViolationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,3 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::post('/translate', [App\Http\Controllers\TranslationController::class, 'translate']);
+
+Route::post('/tra-cuu', [TrafficViolationController::class, 'bienSoCheck']);
