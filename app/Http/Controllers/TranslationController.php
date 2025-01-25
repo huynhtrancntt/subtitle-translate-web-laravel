@@ -14,6 +14,7 @@ class TranslationController extends Controller
 
     public function translate(Request $request)
     {
+
         // Kiểm tra method
         if ($request->method() !== 'POST') {
             return response()->json(['error' => 'Only POST requests allowed'], 405);
